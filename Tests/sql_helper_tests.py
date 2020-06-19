@@ -1,7 +1,6 @@
 import unittest
 import os.path as path
-
-from SQLiteHelper import SQLiteHelper as DB
+import SQLiteHelper as DB
 
 
 class MyTestCase(unittest.TestCase):
