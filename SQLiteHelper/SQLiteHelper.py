@@ -12,7 +12,8 @@ class SQLiteHelper:
         except sqlite3.Error as e:
             print(f"Error {e}")
 
-    def get_datetime_key(self):
+    @staticmethod
+    def get_datetime_key():
         return 'date_time'
 
     def execute(self, query, values=None):
@@ -23,10 +24,10 @@ class SQLiteHelper:
             else:
                 cursor.execute(query, values)
             self.connection.commit()
-            return True
+            return True, cursor
         except sqlite3.Error as e:
             print(f'Error executing query: {e}')
-            return False
+            return False, cursor
 
     def create(self, table_name, table_structure):
         create_table_query = 'CREATE TABLE IF NOT EXISTS ' + table_name + ' ('
@@ -47,8 +48,12 @@ class SQLiteHelper:
                              + self.get_datetime_key() + ') VALUES (' \
                              + ','.join(['?'] * len(data)) + ',?);'
 
-        record = tuple(data[field] for field in field_list) + (datetime.now().isoformat(), )
+        record = tuple(data[field] for field in field_list) + (datetime.now().isoformat(),)
         return self.execute(insert_table_query, record)
+
+    def fetch(self, table_name, selections, condition):
+        fetch_table_query = 'SELECT ' + selections + ' FROM ' + table_name + ' WHERE ' + condition + ';'
+        return self.execute(fetch_table_query)
 
     def delete(self, table_name, delete):
         pass
